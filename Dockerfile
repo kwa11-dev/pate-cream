@@ -1,11 +1,29 @@
 # Use PHP with Apache
 FROM php:8.2-apache
 
-# Install dependencies
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
-    git unzip libzip-dev zip libpng-dev libonig-dev libxml2-dev \
-    && docker-php-ext-install pdo_mysql pdo_sqlite zip gd mbstring \
-    && docker-php-ext-enable pdo_sqlite
+    git \
+    unzip \
+    libzip-dev \
+    zip \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    libonig-dev \
+    libxml2-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Configure GD with JPEG and FreeType support
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg
+
+# Install PHP extensions
+RUN docker-php-ext-install \
+    pdo_mysql \
+    pdo_sqlite \
+    zip \
+    gd \
+    mbstring
 
 # Enable Apache rewrite
 RUN a2enmod rewrite
