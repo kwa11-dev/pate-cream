@@ -4,13 +4,16 @@ FROM php:8.2-apache
 # Install dependencies
 RUN apt-get update && apt-get install -y \
     git unzip libzip-dev zip libpng-dev libonig-dev libxml2-dev \
-    && docker-php-ext-install pdo_mysql zip gd
+    && docker-php-ext-install pdo_mysql pdo_sqlite zip gd mbstring \
+    && docker-php-ext-enable pdo_sqlite
 
 # Enable Apache rewrite
 RUN a2enmod rewrite
 
-# Copy app files
+# Set working directory
 WORKDIR /var/www/html
+
+# Copy app files
 COPY . .
 
 # Install Composer
@@ -19,8 +22,24 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 # Install dependencies
 RUN composer install --no-dev --optimize-autoloader
 
+# Set Apache DocumentRoot to Laravel's public directory
+ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
+RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+
+# Update Apache configuration to allow .htaccess overrides
+RUN echo '<Directory /var/www/html/public>\n\
+    AllowOverride All\n\
+    Require all granted\n\
+</Directory>' > /etc/apache2/conf-available/laravel.conf \
+    && a2enconf laravel
+
+# Create SQLite database file if it doesn't exist
+RUN touch /var/www/html/database/database.sqlite
+
 # Laravel permissions
-RUN chown -R www-data:www-data storage bootstrap/cache
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database \
+    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database
 
 # Expose port
 EXPOSE 80
