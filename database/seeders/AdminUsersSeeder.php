@@ -16,18 +16,11 @@ class AdminUsersSeeder extends Seeder
         DB::table('admin_users')->insert([
             [
                 'name' => 'Super Admin',
-                'email' => 'superadmin@example.com',
-                'password' => Hash::make('password123'), // change later
+                'email' => 'patecream@admin.com',
+                'password' => Hash::make('P@ssw0rd'), // change later
                 'created_at' => now(),
                 'updated_at' => now(),
-            ],
-            [
-                'name' => 'Support Admin',
-                'email' => 'supportadmin@example.com',
-                'password' => Hash::make('password123'), // change later
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
+            ]
         ]);
     }
 }
