@@ -34,7 +34,8 @@ class CategoriesSeeder extends Seeder
             ['name' => 'Water', 'image' => 'images/categories/category_water.jpg'],
             ['name' => 'Gym Items', 'image' => 'images/categories/category_gym_items.jpg'],
             ['name' => 'قشطوطة', 'image' => 'images/categories/category_kashtota.jpg'],
-            ['name' => 'add One', 'image' => 'images/categories/category_add_one.jpg']
+            ['name' => 'add One', 'image' => 'images/categories/category_add_one.jpg'],
+            ['name' => 'Others', 'image' => 'images/categories/category_add_one.jpg' ]
         ];
 
         DB::table('categories')->insert($categories);
