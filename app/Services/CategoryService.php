@@ -8,7 +8,7 @@ class CategoryService
 {
     public function getAll()
     {
-        return Category::get();
+        return Category::with('items')->get();
     }
 
     public function find($id)
